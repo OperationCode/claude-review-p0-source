@@ -36,10 +36,10 @@ permissions: {}
 
 env:
   # V3 only. Non-secret IDs of the TEST federation rule. Leave empty to skip the exchange.
-  P0_FEDERATION_RULE_ID: ""
-  P0_ORGANIZATION_ID: ""
-  P0_SERVICE_ACCOUNT_ID: ""
-  P0_WORKSPACE_ID: ""
+  P0_FEDERATION_RULE_ID: "fdrl_01DrmQ8SP1yTeAi8icEtQbUD"
+  P0_ORGANIZATION_ID: "2bc920f9-977b-43b2-870a-f840e4ce809c"
+  P0_SERVICE_ACCOUNT_ID: "svac_017eR3ohB6rP5MEAsda6U7X6"
+  P0_WORKSPACE_ID: "wrkspc_01EqtFqUCBzVQSrRnWob8ZFK"
   # V9 only: "true" makes analyze do one tiny Messages call with the minted token.
   P0_MESSAGES_CALL: "false"
 
@@ -190,8 +190,8 @@ jobs:
           code=$(curl -sS -o "$out" -w '%{http_code}' -X POST https://api.anthropic.com/v1/oauth/token \
             -H 'content-type: application/json' --data-binary @- <<<"$body" || echo 000)
           unset body
-          # Print the status and non-secret fields only, never access_token.
-          jq -n --arg code "$code" --argjson r "$(jq -c 'del(.access_token, .refresh_token)' "$out" 2>/dev/null || echo null)" \
+          # Print the status and non-secret fields only: drop every key ending in "token".
+          jq -n --arg code "$code" --argjson r "$(jq -c 'walk(if type == "object" then with_entries(select(.key | endswith("token") | not)) else . end)' "$out" 2>/dev/null || echo null)" \
             '{job:"analyze", v3_exchange_http:$code, v3_exchange_body:$r}' | tee -a "$GITHUB_STEP_SUMMARY"
           if [ "$code" != "200" ]; then rm -f "$out"; echo "exchange rejected: analyze fails (fail closed)"; exit 1; fi
           if [ "$P0_MESSAGES_CALL" != "true" ]; then rm -f "$out"; exit 0; fi
