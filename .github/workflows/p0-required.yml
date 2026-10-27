@@ -49,7 +49,6 @@ jobs:
         with:
           egress-policy: block
           disable-telemetry: true
-          disable-sudo-and-containers: true
           allowed-endpoints: >
             api.github.com:443
             github.com:443
@@ -115,7 +114,6 @@ jobs:
         with:
           egress-policy: block
           disable-telemetry: true
-          disable-sudo-and-containers: true
           allowed-endpoints: >
             api.github.com:443
             github.com:443
@@ -211,7 +209,6 @@ jobs:
         with:
           egress-policy: block
           disable-telemetry: true
-          disable-sudo-and-containers: true
           allowed-endpoints: >
             api.github.com:443
       - name: Dependency review of the reviewed pair (no checkout)
@@ -244,7 +241,6 @@ jobs:
         with:
           egress-policy: block
           disable-telemetry: true
-          disable-sudo-and-containers: true
           allowed-endpoints: >
             api.github.com:443
             github.com:443
