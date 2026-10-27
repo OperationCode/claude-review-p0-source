@@ -1,0 +1,15 @@
+{
+  "summary": "One issue.",
+  "findings": [
+    {
+      "severity": "high",
+      "confidence": "medium",
+      "file": "src/app.py",
+      "side": "head",
+      "line": 12,
+      "quote": "eval(user_input)",
+      "title": "eval on input",
+      "explanation": "User input reaches eval."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# Bad: the job must state contents: read itself.
+on: workflow_dispatch
+permissions: {}
+jobs:
+  evals:
+    runs-on: ubuntu-24.04
+    environment: eval
+    permissions:
+      id-token: write
+    steps:
+      - run: echo evals

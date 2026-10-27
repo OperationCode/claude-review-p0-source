@@ -1,0 +1,28 @@
+[project]
+name = "oc-review"
+version = "0.1.0"
+description = "OperationCode Claude PR review: collect, analyze and publish code"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=1.17,<2",
+    "httpx2>=2.16,<3",
+    "jsonschema>=4.23",
+    "pyyaml>=6",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+pythonpath = ["src"]
+addopts = "-ra -m 'not release'"
+markers = [
+    "release: checks that must pass before a release (run with -m release); skipped by default",
+]

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "kind": "bundle",
+  "run_id": 123456,
+  "run_attempt": 1,
+  "repository_id": 42,
+  "pr_number": 7,
+  "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "base_repository_id": 42,
+  "base_ref": "main",
+  "base_tip_sha": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+  "status": "ok",
+  "payload": {
+    "prefilter": {
+      "signals": [],
+      "hard_blocks": []
+    },
+    "coverage": {},
+    "dependency_delta": {}
+  }
+}

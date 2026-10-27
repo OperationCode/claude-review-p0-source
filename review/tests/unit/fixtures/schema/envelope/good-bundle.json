@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "bundle",
+  "run_id": 123456,
+  "run_attempt": 1,
+  "repository_id": 42,
+  "pr_number": 7,
+  "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "base_repository_id": 42,
+  "base_ref": "main",
+  "base_tip_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+  "status": "ok",
+  "payload": {
+    "pr": {
+      "number": 7,
+      "title": "t",
+      "body": ""
+    },
+    "files": [],
+    "dependency_delta": {
+      "packages": []
+    },
+    "prefilter": {
+      "signals": [],
+      "hard_blocks": [
+        {
+          "id": "bidi-control-characters",
+          "level": "hard_block",
+          "detail": "bidi control characters",
+          "file": "src/a.js",
+          "subject": null,
+          "lines": [
+            3
+          ],
+          "count": 1
+        }
+      ]
+    },
+    "coverage": {
+      "complete": true,
+      "files_in_comparison": 1,
+      "files_collected": 1
+    },
+    "size": {
+      "estimated_tokens": 200000
+    }
+  }
+}

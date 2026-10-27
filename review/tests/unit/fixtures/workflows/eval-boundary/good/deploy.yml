@@ -1,0 +1,13 @@
+# Good: another workflow may use another environment.
+on: push
+permissions: {}
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: production
+      url: https://example.invalid
+    permissions:
+      contents: read
+    steps:
+      - run: echo deploy

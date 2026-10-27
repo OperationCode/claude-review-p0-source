@@ -1,0 +1,91 @@
+{
+ "description": "The PR head moved after the event: status stale, no tree or blob reads.",
+ "event": {
+  "repository": {
+   "id": 11,
+   "full_name": "OperationCode/back-end"
+  },
+  "pull_request": {
+   "number": 8,
+   "head": {
+    "sha": "9a6d6fe8030a011fac5c4cb5b2ff3b3212a28dc8"
+   }
+  }
+ },
+ "now": "2026-10-25T12:00:00+00:00",
+ "github": {
+  "/repos/OperationCode/back-end/pulls/8": {
+   "status": 200,
+   "json": {
+    "number": 8,
+    "state": "open",
+    "title": "Fix login",
+    "body": "Fixes the login.",
+    "user": {
+     "login": "contributor"
+    },
+    "author_association": "FIRST_TIME_CONTRIBUTOR",
+    "labels": [
+     {
+      "name": "bug"
+     }
+    ],
+    "draft": false,
+    "changed_files": 0,
+    "head": {
+     "sha": "668da0b48f7807ea35e81596fd9e5ec5133a1667",
+     "ref": "fix-login",
+     "repo": {
+      "id": 999,
+      "full_name": "contributor/back-end",
+      "fork": true
+     }
+    },
+    "base": {
+     "sha": "070ed1dbeb8c96ee477f76cda14a42e96c9f3237",
+     "ref": "main",
+     "repo": {
+      "id": 11,
+      "full_name": "OperationCode/back-end",
+      "default_branch": "main",
+      "fork": false
+     }
+    }
+   }
+  },
+  "/repos/OperationCode/back-end/git/ref/heads/main": {
+   "status": 200,
+   "json": {
+    "ref": "refs/heads/main",
+    "node_id": "x",
+    "object": {
+     "sha": "b868577fceab13dfc85012284eb4539918c8e865",
+     "type": "commit"
+    }
+   }
+  },
+  "/repos/OperationCode/back-end/compare/b868577fceab13dfc85012284eb4539918c8e865...9a6d6fe8030a011fac5c4cb5b2ff3b3212a28dc8?per_page=1": {
+   "status": 200,
+   "json": {
+    "status": "diverged",
+    "base_commit": {
+     "sha": "b868577fceab13dfc85012284eb4539918c8e865"
+    },
+    "merge_base_commit": {
+     "sha": "fea2dc0a0ab6462d75f2899bda98815e6b10f07c"
+    },
+    "commits": [
+     {
+      "sha": "9a6d6fe8030a011fac5c4cb5b2ff3b3212a28dc8"
+     }
+    ],
+    "files": [
+     {
+      "filename": "ignored-by-collect"
+     }
+    ]
+   }
+  }
+ },
+ "registry": {}
+}

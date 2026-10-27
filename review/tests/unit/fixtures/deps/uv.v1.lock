@@ -1,0 +1,34 @@
+version = 1
+requires-python = ">=3.12"
+
+[[package]]
+name = "demo"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [{ name = "requests" }]
+
+[[package]]
+name = "requests"
+version = "2.31.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/x/requests-2.31.0.tar.gz", hash = "sha256:aa", size = 1 }
+
+[[package]]
+name = "forked-pkg"
+version = "1.0.0"
+source = { git = "https://github.com/o/forked.git?rev=abc#0123456789abcdef" }
+
+[[package]]
+name = "tarpkg"
+version = "1.0.0"
+source = { url = "https://example.com/tarpkg-1.0.tar.gz" }
+
+[[package]]
+name = "corp"
+version = "1.0.0"
+source = { registry = "https://pypi.corp.example/simple" }
+
+[[package]]
+name = "localpkg"
+version = "0.1.0"
+source = { directory = "../local" }

@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "demo"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.31"
+forked = { git = "https://github.com/o/forked.git", rev = "abc" }
+local = { path = "../local" }
+multi = [{ version = "^1.0", python = "<3.9" }, { version = "^2.0", python = ">=3.9" }]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8"

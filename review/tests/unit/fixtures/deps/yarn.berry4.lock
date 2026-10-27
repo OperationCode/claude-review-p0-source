@@ -1,0 +1,10 @@
+__metadata:
+  version: 4
+  cacheKey: 7
+
+"left-pad@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "left-pad@npm:1.3.0"
+  checksum: abc
+  languageName: node
+  linkType: hard

@@ -1,0 +1,125 @@
+{
+  "files": [
+    {
+      "path": "src/app.py",
+      "base": [
+        "import os",
+        "import subprocess",
+        "",
+        "",
+        "def check_admin(user):",
+        "    if not user.is_admin:",
+        "        raise PermissionError(\"admin only\")",
+        "    return True",
+        "",
+        "",
+        "def run(cmd):",
+        "    return subprocess.run(cmd, shell=False)",
+        "",
+        "",
+        "def load(path):",
+        "    with open(path) as fh:",
+        "        return fh.read()",
+        "",
+        "",
+        "# end"
+      ],
+      "head": [
+        "import os",
+        "import subprocess",
+        "",
+        "",
+        "def check_admin(user):",
+        "    return True",
+        "",
+        "",
+        "def run(cmd):",
+        "    return subprocess.run(cmd, shell=True)",
+        "",
+        "",
+        "def load(path):",
+        "    with open(path) as fh:",
+        "        return fh.read()",
+        "",
+        "",
+        "# end"
+      ],
+      "expected_base_hunks": [[3, 15]],
+      "expected_head_hunks": [[3, 13]]
+    },
+    {
+      "path": "src/auth_new.py",
+      "old_path": "src/auth.py",
+      "base": ["def allowed(user):", "    return user.role == \"admin\""],
+      "head": ["def allowed(user):", "    return user.role == \"admin\""],
+      "expected_base_hunks": [],
+      "expected_head_hunks": []
+    },
+    {
+      "path": "src/new.py",
+      "base": null,
+      "head": ["import requests", "requests.get(\"http://evil.example\")"],
+      "expected_base_hunks": [],
+      "expected_head_hunks": [[1, 2]]
+    },
+    {
+      "path": "src/gone.py",
+      "base": ["SECRET_CHECK = True", "assert SECRET_CHECK"],
+      "head": null,
+      "expected_base_hunks": [[1, 2]],
+      "expected_head_hunks": []
+    },
+    {
+      "path": "dist/big.js",
+      "base": null,
+      "head": null,
+      "expected_base_hunks": [],
+      "expected_head_hunks": []
+    },
+    {
+      "path": "lib/perms.py",
+      "old_path": "lib/perm.py",
+      "base": ["def authorize(user):", "    return user.can_write"],
+      "head": ["def authorize(user):", "    return user.can_write"],
+      "expected_base_hunks": [],
+      "expected_head_hunks": []
+    },
+    {
+      "path": "lib/perm.py",
+      "base": null,
+      "head": ["# new module at the old path", "VERSION = 2"],
+      "expected_base_hunks": [],
+      "expected_head_hunks": [[1, 2]]
+    }
+  ],
+  "cases": [
+    {"name": "head line in hunk", "file": "src/app.py", "side": "head", "line": 10, "quote": "subprocess.run(cmd, shell=True)", "verified": true, "inline": true},
+    {"name": "base removed check in hunk", "file": "src/app.py", "side": "base", "line": 6, "quote": "if not user.is_admin:", "verified": true, "inline": true},
+    {"name": "head line outside diff", "file": "src/app.py", "side": "head", "line": 18, "quote": "# end", "verified": true, "inline": false},
+    {"name": "base line outside diff", "file": "src/app.py", "side": "base", "line": 20, "quote": "# end", "verified": true, "inline": false},
+    {"name": "quote 2 lines away", "file": "src/app.py", "side": "head", "line": 12, "quote": "shell=True", "verified": true, "inline": true},
+    {"name": "quote exactly 3 lines before", "file": "src/app.py", "side": "head", "line": 13, "quote": "shell=True", "verified": true, "inline": true},
+    {"name": "quote exactly 3 lines after", "file": "src/app.py", "side": "head", "line": 7, "quote": "shell=True", "verified": true, "inline": true},
+    {"name": "quote 4 lines away", "file": "src/app.py", "side": "head", "line": 14, "quote": "shell=True", "verified": false, "inline": false, "why": "quote not found"},
+    {"name": "line past end of blob", "file": "src/app.py", "side": "head", "line": 99, "quote": "# end", "verified": false, "inline": false, "why": "line is not in the head blob"},
+    {"name": "line zero", "file": "src/app.py", "side": "head", "line": 0, "quote": "import os", "verified": false, "inline": false, "why": "line is not in the head blob"},
+    {"name": "whitespace-only quote", "file": "src/app.py", "side": "head", "line": 6, "quote": "   \t ", "verified": false, "inline": false, "why": "empty quote"},
+    {"name": "empty quote", "file": "src/app.py", "side": "head", "line": 6, "quote": "", "verified": false, "inline": false, "why": "empty quote"},
+    {"name": "whitespace normalized", "file": "src/app.py", "side": "head", "line": 10, "quote": "  subprocess.run(cmd,\t  shell=True) ", "verified": true, "inline": true},
+    {"name": "multi-line quote", "file": "src/app.py", "side": "head", "line": 9, "quote": "def run(cmd):\n    return subprocess.run(cmd, shell=True)", "verified": true, "inline": true},
+    {"name": "head quote cited on base side", "file": "src/app.py", "side": "base", "line": 12, "quote": "shell=True", "verified": false, "inline": false, "why": "quote not found"},
+    {"name": "file not changed", "file": "src/other.py", "side": "head", "line": 1, "quote": "import os", "verified": false, "inline": false, "why": "not in the changed files"},
+    {"name": "rename old path on base side", "file": "src/auth.py", "side": "base", "line": 2, "quote": "user.role == \"admin\"", "verified": true, "inline": false},
+    {"name": "rename new path on base side", "file": "src/auth_new.py", "side": "base", "line": 2, "quote": "user.role == \"admin\"", "verified": true, "inline": false},
+    {"name": "rename old path on head side", "file": "src/auth.py", "side": "head", "line": 2, "quote": "user.role == \"admin\"", "verified": false, "inline": false, "why": "not in the changed files"},
+    {"name": "added file head", "file": "src/new.py", "side": "head", "line": 2, "quote": "requests.get(\"http://evil.example\")", "verified": true, "inline": true},
+    {"name": "added file base side", "file": "src/new.py", "side": "base", "line": 1, "quote": "import requests", "verified": false, "inline": false, "why": "no base content"},
+    {"name": "removed file base", "file": "src/gone.py", "side": "base", "line": 2, "quote": "assert SECRET_CHECK", "verified": true, "inline": true},
+    {"name": "removed file head side", "file": "src/gone.py", "side": "head", "line": 1, "quote": "SECRET_CHECK = True", "verified": false, "inline": false, "why": "no head content"},
+    {"name": "content unavailable", "file": "dist/big.js", "side": "head", "line": 1, "quote": "x", "verified": false, "inline": false, "why": "no head content"},
+    {"name": "rename old path reused by an added file, base side", "file": "lib/perm.py", "side": "base", "line": 2, "quote": "return user.can_write", "verified": true, "inline": false},
+    {"name": "rename new path with its old path reused, base side", "file": "lib/perms.py", "side": "base", "line": 1, "quote": "def authorize(user):", "verified": true, "inline": false},
+    {"name": "added file at a reused old path, head side", "file": "lib/perm.py", "side": "head", "line": 2, "quote": "VERSION = 2", "verified": true, "inline": true},
+    {"name": "reused old path on base side is the rename's base", "file": "lib/perm.py", "side": "base", "line": 2, "quote": "VERSION = 2", "verified": false, "inline": false, "why": "quote not found"}
+  ]
+}

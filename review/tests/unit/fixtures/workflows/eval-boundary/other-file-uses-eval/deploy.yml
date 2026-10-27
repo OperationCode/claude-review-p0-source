@@ -1,0 +1,12 @@
+# Bad: a workflow other than eval.yml uses eval (even with eval-shaped permissions).
+on: workflow_dispatch
+permissions: {}
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: eval
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - run: echo deploy

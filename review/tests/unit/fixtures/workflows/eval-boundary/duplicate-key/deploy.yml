@@ -1,0 +1,12 @@
+# Bad: a duplicate key could hide `environment: eval` from a reader. The loader rejects it.
+on: workflow_dispatch
+permissions: {}
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: eval
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - run: echo deploy

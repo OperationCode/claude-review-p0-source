@@ -1,0 +1,13 @@
+# Bad: a GitHub write on the job that holds the eval credential.
+on: workflow_dispatch
+permissions: {}
+jobs:
+  evals:
+    runs-on: ubuntu-24.04
+    environment: eval
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    steps:
+      - run: echo evals

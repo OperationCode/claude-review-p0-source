@@ -1,0 +1,11 @@
+# Bad: no job-level permissions block, even though the workflow level has the right scopes.
+on: workflow_dispatch
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  evals:
+    runs-on: ubuntu-24.04
+    environment: eval
+    steps:
+      - run: echo evals

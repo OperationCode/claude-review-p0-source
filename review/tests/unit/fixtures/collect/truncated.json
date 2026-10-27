@@ -1,0 +1,130 @@
+{
+ "description": "The head tree is truncated: coverage incomplete, no blob reads.",
+ "event": {
+  "repository": {
+   "id": 11,
+   "full_name": "OperationCode/back-end"
+  },
+  "pull_request": {
+   "number": 9,
+   "head": {
+    "sha": "4f24292a5d791bffeb41c4d7dcaea463d7055f3c"
+   }
+  }
+ },
+ "now": "2026-10-25T12:00:00+00:00",
+ "github": {
+  "/repos/OperationCode/back-end/pulls/9": {
+   "status": 200,
+   "json": {
+    "number": 9,
+    "state": "open",
+    "title": "Fix login",
+    "body": "Fixes the login.",
+    "user": {
+     "login": "contributor"
+    },
+    "author_association": "FIRST_TIME_CONTRIBUTOR",
+    "labels": [
+     {
+      "name": "bug"
+     }
+    ],
+    "draft": false,
+    "changed_files": 0,
+    "head": {
+     "sha": "4f24292a5d791bffeb41c4d7dcaea463d7055f3c",
+     "ref": "fix-login",
+     "repo": {
+      "id": 11,
+      "full_name": "OperationCode/back-end",
+      "fork": false
+     }
+    },
+    "base": {
+     "sha": "070ed1dbeb8c96ee477f76cda14a42e96c9f3237",
+     "ref": "main",
+     "repo": {
+      "id": 11,
+      "full_name": "OperationCode/back-end",
+      "default_branch": "main",
+      "fork": false
+     }
+    }
+   }
+  },
+  "/repos/OperationCode/back-end/git/ref/heads/main": {
+   "status": 200,
+   "json": {
+    "ref": "refs/heads/main",
+    "node_id": "x",
+    "object": {
+     "sha": "b868577fceab13dfc85012284eb4539918c8e865",
+     "type": "commit"
+    }
+   }
+  },
+  "/repos/OperationCode/back-end/compare/b868577fceab13dfc85012284eb4539918c8e865...4f24292a5d791bffeb41c4d7dcaea463d7055f3c?per_page=1": {
+   "status": 200,
+   "json": {
+    "status": "diverged",
+    "base_commit": {
+     "sha": "b868577fceab13dfc85012284eb4539918c8e865"
+    },
+    "merge_base_commit": {
+     "sha": "86d57f7be299b0e772d90d764eb14a39c81b43d8"
+    },
+    "commits": [
+     {
+      "sha": "4f24292a5d791bffeb41c4d7dcaea463d7055f3c"
+     }
+    ],
+    "files": [
+     {
+      "filename": "ignored-by-collect"
+     }
+    ]
+   }
+  },
+  "/repos/OperationCode/back-end/git/trees/86d57f7be299b0e772d90d764eb14a39c81b43d8?recursive=1": {
+   "status": 200,
+   "json": {
+    "sha": "c4f4953627ecc93ce2f22142f9122099653ea401",
+    "tree": [
+     {
+      "path": "a.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78981922613b2afb6025042ff6bd878ac1994e85",
+      "size": 2
+     }
+    ],
+    "truncated": false
+   }
+  },
+  "/repos/OperationCode/back-end/git/trees/4f24292a5d791bffeb41c4d7dcaea463d7055f3c?recursive=1": {
+   "status": 200,
+   "json": {
+    "sha": "bd57465a8ee07a5c32f0446a24072fdef9d222dc",
+    "tree": [
+     {
+      "path": "a.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7d0fbd899c2fc554e82fe2a51d9ee8f8f0a389cc",
+      "size": 10
+     },
+     {
+      "path": "b.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "61780798228d17af2d34fce4cfbdf35556832472",
+      "size": 2
+     }
+    ],
+    "truncated": true
+   }
+  }
+ },
+ "registry": {}
+}

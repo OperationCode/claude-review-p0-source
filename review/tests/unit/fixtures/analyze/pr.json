@@ -1,0 +1,13 @@
+{
+  "number": 7,
+  "head": {
+    "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "base": {
+    "ref": "main",
+    "repo": {
+      "id": 42,
+      "default_branch": "main"
+    }
+  }
+}

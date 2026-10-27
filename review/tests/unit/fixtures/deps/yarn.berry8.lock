@@ -1,0 +1,10 @@
+__metadata:
+  version: 8
+  cacheKey: 10c0
+
+"@scope/pkg@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "@scope/pkg@npm:2.1.0"
+  checksum: 10c0/def
+  languageName: node
+  linkType: hard

@@ -1,0 +1,12 @@
+# Bad: workflow_call would let another workflow call eval.yml.
+on: [workflow_dispatch, workflow_call]
+permissions: {}
+jobs:
+  evals:
+    runs-on: ubuntu-24.04
+    environment: eval
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - run: echo evals

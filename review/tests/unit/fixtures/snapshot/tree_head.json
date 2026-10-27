@@ -1,0 +1,54 @@
+{
+  "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "truncated": false,
+  "tree": [
+    {
+      "path": "src",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "1111111111111111111111111111111111111111"
+    },
+    {
+      "path": "src/keep.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2222222222222222222222222222222222222222"
+    },
+    {
+      "path": "src/edit.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9999999999999999999999999999999999999999"
+    },
+    {
+      "path": "src/new.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "path": "run.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "5555555555555555555555555555555555555555"
+    },
+    {
+      "path": "new/name.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6666666666666666666666666666666666666666"
+    },
+    {
+      "path": "link",
+      "mode": "120000",
+      "type": "blob",
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    {
+      "path": "vendor/lib",
+      "mode": "160000",
+      "type": "commit",
+      "sha": "cccccccccccccccccccccccccccccccccccccccc"
+    }
+  ]
+}

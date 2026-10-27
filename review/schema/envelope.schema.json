@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "run_id", "run_attempt", "repository_id", "pr_number",
+    "head_sha", "base_repository_id", "base_ref", "base_tip_sha", "merge_base_sha",
+    "status", "payload"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "enum": ["bundle", "pass"] },
+    "run_id": { "type": "integer", "minimum": 1 },
+    "run_attempt": { "type": "integer", "minimum": 1 },
+    "repository_id": { "type": "integer", "minimum": 1 },
+    "pr_number": { "type": "integer", "minimum": 1 },
+    "head_sha": { "$ref": "#/$defs/sha" },
+    "base_repository_id": { "type": "integer", "minimum": 1 },
+    "base_ref": { "type": "string", "minLength": 1, "maxLength": 255 },
+    "base_tip_sha": { "$ref": "#/$defs/sha" },
+    "merge_base_sha": { "$ref": "#/$defs/sha" },
+    "pass": { "enum": ["review", "security", "supply-chain"] },
+    "status": { "enum": ["ok", "failed", "skipped-size", "stale"] },
+    "payload": { "type": ["object", "null"] },
+    "meta": { "$ref": "#/$defs/pass_meta" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "pass" } }, "required": ["kind"] },
+      "then": { "required": ["pass"] },
+      "else": { "not": { "required": ["pass"] } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "pass" } }, "required": ["kind"] },
+      "else": { "not": { "required": ["meta"] } }
+    },
+    {
+      "if": {
+        "properties": { "kind": { "const": "bundle" }, "status": { "enum": ["ok", "skipped-size"] } },
+        "required": ["kind", "status"]
+      },
+      "then": { "properties": { "payload": { "$ref": "#/$defs/bundle_payload" } } },
+      "else": {
+        "if": {
+          "properties": { "kind": { "const": "pass" }, "status": { "const": "ok" } },
+          "required": ["kind", "status"]
+        },
+        "then": { "properties": { "payload": { "type": "object" } } },
+        "else": { "properties": { "payload": { "type": "null" } } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "kind": { "const": "bundle" }, "status": { "const": "skipped-size" } },
+        "required": ["kind", "status"]
+      },
+      "then": {
+        "properties": {
+          "payload": { "propertyNames": { "enum": ["prefilter", "coverage", "dependency_delta", "size"] } }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "bundle_payload": {
+      "type": "object",
+      "required": ["prefilter", "coverage", "dependency_delta"],
+      "properties": {
+        "prefilter": {
+          "type": "object",
+          "required": ["signals", "hard_blocks"],
+          "properties": {
+            "signals": { "type": "array" },
+            "hard_blocks": { "type": "array", "items": { "$ref": "#/$defs/hard_block" } }
+          }
+        },
+        "coverage": { "type": "object" }
+      }
+    },
+    "pass_meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": { "type": ["string", "null"], "maxLength": 200 },
+        "model": { "type": ["string", "null"], "maxLength": 100 },
+        "stop_reason": { "type": ["string", "null"], "maxLength": 40 },
+        "request_schema_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "usage": { "$ref": "#/$defs/usage" }
+      }
+    },
+    "usage": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "input_tokens": { "$ref": "#/$defs/count" },
+        "output_tokens": { "$ref": "#/$defs/count" },
+        "cache_creation_input_tokens": { "$ref": "#/$defs/count" },
+        "cache_read_input_tokens": { "$ref": "#/$defs/count" },
+        "iterations": { "$ref": "#/$defs/count" }
+      }
+    },
+    "count": { "type": "integer", "minimum": 0 },
+    "hard_block": {
+      "type": "object",
+      "required": ["id"],
+      "properties": { "id": { "type": "string", "minLength": 1 } }
+    }
+  }
+}

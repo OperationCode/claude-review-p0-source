@@ -1,0 +1,15 @@
+# comment
+-r base.txt
+--index-url https://pypi.corp.example/simple
+--extra-index-url=https://pypi.org/simple
+requests==2.31.0 \
+    --hash=sha256:aa \
+    --hash=sha256:bb
+Flask[async]>=3.0 ; python_version >= "3.9"  # trailing comment
+Django (>=4.2,<5)
+private-lib @ git+https://github.com/o/private-lib.git@v1
+git+https://github.com/o/other.git@abc#egg=other_pkg
+-e git+https://token:secret@github.com/o/edit.git#egg=edit
+https://example.com/wheel-1.0-py3-none-any.whl
+./local/pkg
+-e ../editable

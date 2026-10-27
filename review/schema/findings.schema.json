@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["summary", "findings"],
+  "properties": {
+    "summary": { "type": "string", "maxLength": 1500 },
+    "findings": {
+      "type": "array",
+      "maxItems": 15,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["category", "severity", "confidence", "file", "side", "line", "quote", "title", "explanation"],
+        "properties": {
+          "category": { "enum": ["bug", "security", "supply-chain", "malicious", "prompt-injection"] },
+          "severity": { "enum": ["low", "medium", "high", "critical"] },
+          "confidence": { "enum": ["low", "medium", "high"] },
+          "file": { "type": "string", "minLength": 1, "maxLength": 400 },
+          "side": { "enum": ["head", "base"] },
+          "line": { "type": "integer", "minimum": 1 },
+          "quote": { "type": "string", "minLength": 1, "maxLength": 300 },
+          "title": { "type": "string", "maxLength": 120 },
+          "explanation": { "type": "string", "maxLength": 1200 }
+        }
+      }
+    }
+  }
+}

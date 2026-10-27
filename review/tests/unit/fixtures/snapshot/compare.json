@@ -1,0 +1,9 @@
+{
+  "base_commit": {
+    "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "merge_base_commit": {
+    "sha": "cccccccccccccccccccccccccccccccccccccccc"
+  },
+  "status": "ahead"
+}

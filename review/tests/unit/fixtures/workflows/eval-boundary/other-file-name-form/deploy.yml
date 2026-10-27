@@ -1,0 +1,14 @@
+# Bad: the mapping form {name: eval} in a workflow other than eval.yml.
+on: workflow_dispatch
+permissions: {}
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: eval
+      url: https://example.invalid
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - run: echo deploy

@@ -1,0 +1,16 @@
+{
+  "summary": "x",
+  "findings": [
+    {
+      "category": "bug",
+      "severity": "low",
+      "confidence": "low",
+      "file": "src/app.py",
+      "side": "base",
+      "line": 12,
+      "quote": "eval(user_input)",
+      "title": "eval on input",
+      "explanation": "User input reaches eval."
+    }
+  ]
+}

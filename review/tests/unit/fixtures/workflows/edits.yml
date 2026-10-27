@@ -1,0 +1,590 @@
+# Bad workflows, written as edits of the real files in .github/workflows.
+#
+# test_workflows.py copies the real directory, replaces the first occurrence of
+# `old` with `new` in `file`, and requires the violation tags to equal `expect`
+# exactly (a tag, or a list of tags).
+# If `old` is no longer in the file, the test fails and the edit needs an update.
+
+# --- pinning (every workflow) ---
+- id: uses-tag
+  file: claude-review.yml
+  old: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+  new: "actions/checkout@v7"
+  expect: unpinned-uses
+- id: uses-short-sha
+  file: claude-review.yml
+  old: "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9"
+  new: "actions/upload-artifact@cf430e0"
+  expect: unpinned-uses
+- id: uses-local-action
+  file: claude-review.yml
+  old: "uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294"
+  new: "uses: ./.github/actions/dependency-review"
+  expect: [unpinned-uses, dependency-review]
+- id: uses-local-action-eval
+  file: eval.yml
+  old: "uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884"
+  new: "uses: ./.github/actions/setup-uv"
+  expect: unpinned-uses
+- id: uses-docker
+  file: eval.yml
+  old: "uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884"
+  new: "uses: docker://ghcr.io/astral-sh/uv:0.13.1"
+  expect: unpinned-uses
+- id: uses-no-version-comment
+  file: claude-review.yml
+  old: " # v5.0.0, released 2026-05-08"
+  new: ""
+  expect: version-comment
+- id: uses-flow-style
+  file: test.yml
+  old: "      - name: Check out this repo\n        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, released 2026-07-20\n        with:\n          persist-credentials: false\n"
+  new: "      - {name: Check out this repo, uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1, with: {persist-credentials: false}}\n"
+  expect: version-comment
+- id: actions-cache
+  file: claude-review.yml
+  old: "      - name: Collect the PR bundle\n"
+  new: "      - name: Cache\n        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4\n        with:\n          path: ~/.cache/uv\n          key: uv\n      - name: Collect the PR bundle\n"
+  expect: cache
+- id: setup-uv-cache-on
+  file: test.yml
+  old: "enable-cache: false"
+  new: "enable-cache: auto"
+  expect: setup-uv
+
+# --- harden-runner, timeouts, scripts (every workflow) ---
+- id: harden-runner-not-first
+  file: claude-review.yml
+  old: "    steps:\n      - name: Harden the runner\n        uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2, released 2026-10-19\n        with:\n          egress-policy: audit\n          # BLOCK-MODE ALLOWLIST (L8): placeholder until V10 measures it.\n          # Expected, to confirm: github.com:443 api.github.com:443\n      - name: Dependency review"
+  new: "    steps:\n      - name: Dependency review"
+  expect: harden-runner
+- id: harden-runner-block-without-list
+  file: eval.yml
+  old: "egress-policy: audit"
+  new: "egress-policy: block"
+  expect: harden-runner
+- id: harden-runner-policy-missing
+  file: test.yml
+  old: "          egress-policy: audit\n"
+  new: ""
+  expect: harden-runner
+- id: timeout-missing
+  file: claude-review.yml
+  old: "    timeout-minutes: 10\n"
+  new: ""
+  expect: timeout
+- id: timeout-too-long
+  file: claude-review.yml
+  old: "    timeout-minutes: 10\n"
+  new: "    timeout-minutes: 360\n"
+  expect: timeout
+- id: timeout-boolean
+  file: eval.yml
+  old: "    timeout-minutes: 30\n"
+  new: "    timeout-minutes: true\n"
+  expect: timeout
+- id: timeout-eval-wrong
+  file: eval.yml
+  old: "    timeout-minutes: 30\n"
+  new: "    timeout-minutes: 10\n"
+  expect: timeout
+- id: timeout-test-wrong
+  file: test.yml
+  old: "    timeout-minutes: 10\n"
+  new: "    timeout-minutes: 30\n"
+  expect: timeout
+- id: timeout-expression
+  file: test.yml
+  old: "    timeout-minutes: 10\n"
+  new: "    timeout-minutes: ${{ 360 }}\n"
+  expect: timeout
+- id: run-expression
+  file: claude-review.yml
+  old: "--bundle-digest \"$BUNDLE_DIGEST\""
+  new: "--bundle-digest \"${{ needs.collect.outputs.bundle-digest }}\""
+  expect: run-expression
+- id: anthropic-env
+  file: claude-review.yml
+  old: "          JOB_WORKFLOW_SHA: ${{ job.workflow_sha }}\n"
+  new: "          JOB_WORKFLOW_SHA: ${{ job.workflow_sha }}\n          ANTHROPIC_BASE_URL: https://example.invalid\n"
+  expect: anthropic-env
+- id: continue-on-error-step
+  file: claude-review.yml
+  old: "        id: dr\n"
+  new: "        id: dr\n        continue-on-error: true\n"
+  expect: continue-on-error
+- id: continue-on-error-job
+  file: claude-review.yml
+  old: "  analyze:\n    needs: collect\n"
+  new: "  analyze:\n    needs: collect\n    continue-on-error: true\n"
+  expect: continue-on-error
+
+# --- central workflow: trigger, permissions, concurrency, jobs ---
+- id: trigger-extra-event
+  file: claude-review.yml
+  old: "on: pull_request_target\n"
+  new: "on: [pull_request_target, pull_request]\n"
+  expect: trigger
+- id: trigger-filter
+  file: claude-review.yml
+  old: "on: pull_request_target\n"
+  new: "on:\n  pull_request_target:\n    types: [opened]\n"
+  expect: trigger
+- id: top-permissions-read-all
+  file: claude-review.yml
+  old: "permissions: {}\n\njobs:"
+  new: "permissions: read-all\n\njobs:"
+  expect: top-permissions
+- id: analyze-github-write
+  file: claude-review.yml
+  old: "      pull-requests: read\n      id-token: write\n"
+  new: "      pull-requests: write\n      id-token: write\n"
+  expect: [credential-separation, job-permissions]
+- id: gate-id-token
+  file: claude-review.yml
+  old: "      actions: read\n"
+  new: "      actions: read\n      id-token: write\n"
+  expect: [credential-separation, job-permissions]
+- id: extra-job-id-token-with-write
+  file: eval.yml
+  old: "jobs:\n"
+  new: "jobs:\n  extra:\n    runs-on: ubuntu-24.04\n    timeout-minutes: 30\n    permissions:\n      contents: write\n      id-token: write\n    steps:\n      - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2, released 2026-10-19\n        with:\n          egress-policy: audit\n      - run: echo hi\n"
+  expect: credential-separation
+- id: extra-job-write-all
+  file: eval.yml
+  old: "jobs:\n"
+  new: "jobs:\n  extra:\n    runs-on: ubuntu-24.04\n    timeout-minutes: 30\n    permissions: write-all\n    steps:\n      - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2, released 2026-10-19\n        with:\n          egress-policy: audit\n      - run: echo hi\n"
+  expect: credential-separation
+- id: collect-id-token
+  file: claude-review.yml
+  old: "      contents: read\n      pull-requests: read\n    env:"
+  new: "      contents: read\n      pull-requests: read\n      id-token: write\n    env:"
+  expect: job-permissions
+- id: gate-checks-write
+  file: claude-review.yml
+  old: "      actions: read\n"
+  new: "      actions: read\n      checks: write\n"
+  expect: job-permissions
+- id: gate-contents-missing
+  file: claude-review.yml
+  old: "      contents: read\n      pull-requests: write\n"
+  new: "      pull-requests: write\n"
+  expect: job-permissions
+- id: concurrency-workflow
+  file: claude-review.yml
+  old: "permissions: {}\n\njobs:"
+  new: "permissions: {}\n\nconcurrency: review\n\njobs:"
+  expect: concurrency
+- id: concurrency-job
+  file: claude-review.yml
+  old: "    if: always()\n"
+  new: "    if: always()\n    concurrency: gate\n"
+  expect: concurrency
+- id: job-renamed
+  file: claude-review.yml
+  old: "  oc-claude-review:\n"
+  new: "  gate:\n"
+  expect: [jobs, job-if, step-if, download, publish-env, publish-run]
+- id: job-added
+  file: claude-review.yml
+  old: "  oc-claude-review:\n"
+  new: "  extra:\n    runs-on: ubuntu-24.04\n    timeout-minutes: 10\n    permissions:\n      contents: read\n    steps:\n      - uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2, released 2026-10-19\n        with:\n          egress-policy: audit\n      - run: echo hi\n  oc-claude-review:\n"
+  expect: jobs
+- id: gate-needs-short
+  file: claude-review.yml
+  old: "    needs: [collect, analyze, dependency-review]"
+  new: "    needs: [collect, analyze]"
+  expect: needs
+- id: environment-in-central
+  file: claude-review.yml
+  old: "  collect:\n    runs-on: ubuntu-24.04\n"
+  new: "  collect:\n    runs-on: ubuntu-24.04\n    environment: production\n"
+  expect: environment
+- id: eval-environment-in-central
+  file: claude-review.yml
+  old: "  oc-claude-review:\n    needs: [collect, analyze, dependency-review]\n"
+  new: "  oc-claude-review:\n    needs: [collect, analyze, dependency-review]\n    environment: eval\n"
+  expect: [eval-environment, environment, eval-permissions]
+
+# --- central workflow: if ---
+- id: job-if-on-analyze
+  file: claude-review.yml
+  old: "  analyze:\n    needs: collect\n"
+  new: "  analyze:\n    needs: collect\n    if: always()\n"
+  expect: job-if
+- id: gate-if-changed
+  file: claude-review.yml
+  old: "    if: always()\n"
+  new: "    if: success() || failure()\n"
+  expect: job-if
+- id: step-if-outside-gate
+  file: claude-review.yml
+  old: "      - name: Run the three Claude passes\n        id: analyze\n"
+  new: "      - name: Run the three Claude passes\n        id: analyze\n        if: always()\n"
+  expect: step-if
+- id: step-if-guard-other-id
+  file: claude-review.yml
+  old: "if: needs.analyze.outputs.review-artifact-id != ''"
+  new: "if: needs.analyze.outputs.security-artifact-id != ''"
+  expect: [step-if, download]
+- id: step-if-guard-wrapped
+  file: claude-review.yml
+  old: "if: needs.collect.outputs.bundle-artifact-id != ''"
+  new: "if: ${{ needs.collect.outputs.bundle-artifact-id != '' }}"
+  expect: [step-if, download]
+- id: step-if-on-setup-uv
+  file: claude-review.yml
+  old: "      - name: Set up uv\n"
+  new: "      - name: Set up uv\n        if: always()\n"
+  expect: step-if
+- id: step-if-wrapped
+  file: claude-review.yml
+  old: "      - name: Install the locked Python deps\n"
+  new: "      - name: Install the locked Python deps\n        if: ${{ always() }}\n"
+  expect: step-if
+- id: step-if-on-publish
+  file: claude-review.yml
+  old: "      - name: Compute the gate and write the PR comments\n"
+  new: "      - name: Compute the gate and write the PR comments\n        if: needs.analyze.result == 'success'\n"
+  expect: step-if
+
+# --- central workflow: checkout ---
+- id: checkout-pr-head
+  file: claude-review.yml
+  old: "ref: ${{ job.workflow_sha }}"
+  new: "ref: ${{ github.event.pull_request.head.sha }}"
+  expect: [checkout, forbidden-text]
+- id: checkout-other-ref
+  file: claude-review.yml
+  old: "ref: ${{ job.workflow_sha }}"
+  new: "ref: main"
+  expect: checkout
+- id: checkout-target-repo
+  file: claude-review.yml
+  old: "repository: OperationCode/.github"
+  new: "repository: ${{ github.repository }}"
+  expect: checkout
+- id: checkout-persist-credentials
+  file: claude-review.yml
+  old: "persist-credentials: false"
+  new: "persist-credentials: true"
+  expect: checkout
+- id: checkout-in-dependency-review
+  file: claude-review.yml
+  old: "      - name: Dependency review of the reviewed pair (no checkout)\n"
+  new: "      - name: Check out\n        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1, released 2026-07-20\n        with:\n          repository: OperationCode/.github\n          ref: ${{ job.workflow_sha }}\n          persist-credentials: false\n      - name: Dependency review of the reviewed pair (no checkout)\n"
+  expect: checkout
+- id: github-sha
+  file: claude-review.yml
+  old: "JOB_WORKFLOW_SHA: ${{ job.workflow_sha }}"
+  new: "JOB_WORKFLOW_SHA: ${{ github.sha }}"
+  expect: [forbidden-text, analyze-env]
+- id: github-workflow-sha
+  file: claude-review.yml
+  old: "JOB_WORKFLOW_SHA: ${{ job.workflow_sha }}"
+  new: "JOB_WORKFLOW_SHA: ${{ github.workflow_sha }}"
+  expect: [forbidden-text, analyze-env]
+- id: github-sha-comment
+  file: claude-review.yml
+  old: "# BLOCK-MODE ALLOWLIST (L8): placeholder until V10 measures it."
+  new: "# github.sha"
+  expect: forbidden-text
+- id: github-workflow-sha-comment
+  file: claude-review.yml
+  old: "# BLOCK-MODE ALLOWLIST (L8): placeholder until V10 measures it."
+  new: "# github.workflow_sha"
+  expect: forbidden-text
+
+# --- secrets context, every form (every workflow) ---
+- id: secrets-reference
+  file: claude-review.yml
+  old: "GITHUB_TOKEN: ${{ github.token }}"
+  new: "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
+  expect: secrets
+- id: secrets-bracket-central
+  file: claude-review.yml
+  old: "GITHUB_TOKEN: ${{ github.token }}"
+  new: "GITHUB_TOKEN: ${{ secrets['GITHUB_TOKEN'] }}"
+  expect: secrets
+- id: secrets-tojson-central-input
+  file: claude-review.yml
+  old: "          show-openssf-scorecard: false\n"
+  new: "          show-openssf-scorecard: false\n          config-file: ${{ toJSON(secrets) }}\n"
+  expect: secrets
+- id: secrets-bracket-test-workflow-env
+  file: test.yml
+  old: "permissions: {}\n\njobs:"
+  new: "permissions: {}\n\nenv:\n  CI_SECRET: ${{ secrets['TOKEN'] }}\n\njobs:"
+  expect: secrets
+- id: secrets-spaced-bracket-test-job-env
+  file: test.yml
+  old: "      UV_PYTHON: python3.12\n"
+  new: "      UV_PYTHON: python3.12\n      CI_SECRET: ${{ secrets [ 'TOKEN' ] }}\n"
+  expect: secrets
+- id: secrets-tojson-test-step-input
+  file: test.yml
+  old: "          persist-credentials: false\n"
+  new: "          persist-credentials: false\n          token: ${{ toJSON(secrets) }}\n"
+  expect: secrets
+- id: secrets-uppercase-test-step-env
+  file: test.yml
+  old: "        working-directory: review\n        run: uv run --locked pytest tests/unit\n"
+  new: "        working-directory: review\n        env:\n          TOKEN: ${{ SECRETS.TOKEN }}\n        run: uv run --locked pytest tests/unit\n"
+  expect: secrets
+- id: secrets-inherit-test-job
+  file: test.yml
+  old: "    timeout-minutes: 10\n"
+  new: "    timeout-minutes: 10\n    secrets: inherit\n"
+  expect: secrets
+- id: secrets-bracket-eval-step-env
+  file: eval.yml
+  old: "          JOB_WORKFLOW_SHA: ${{ job.workflow_sha }}\n"
+  new: "          JOB_WORKFLOW_SHA: ${{ job.workflow_sha }}\n          TOKEN: ${{ secrets['TOKEN'] }}\n"
+  expect: secrets
+
+# --- central workflow: artifacts ---
+- id: download-by-name
+  file: claude-review.yml
+  old: "artifact-ids: ${{ needs.analyze.outputs.security-artifact-id }}"
+  new: "name: oc-pass-security-a${{ github.run_attempt }}"
+  expect: [download, step-if]
+- id: download-no-digest-check
+  file: claude-review.yml
+  old: "          digest-mismatch: error\n"
+  new: ""
+  expect: download
+- id: download-other-run
+  file: claude-review.yml
+  old: "          path: ${{ runner.temp }}/data/pass-review\n"
+  new: "          path: ${{ runner.temp }}/data/pass-review\n          run-id: 1\n"
+  expect: download
+- id: download-guard-missing
+  file: claude-review.yml
+  old: "        if: needs.analyze.outputs.supply-chain-artifact-id != ''\n"
+  new: ""
+  expect: download
+- id: download-wrong-path
+  file: claude-review.yml
+  old: "path: ${{ runner.temp }}/data/pass-review"
+  new: "path: ${{ runner.temp }}/data"
+  expect: download
+- id: download-digest-warn
+  file: claude-review.yml
+  old: "digest-mismatch: error"
+  new: "digest-mismatch: warn"
+  expect: download
+- id: analyze-guard-missing
+  file: claude-review.yml
+  old: "      - name: Check the bundle artifact id\n        env:\n          BUNDLE_ARTIFACT_ID: ${{ needs.collect.outputs.bundle-artifact-id }}\n"
+  new: "      - name: Something else\n        env:\n          OTHER: x\n"
+  expect: download
+- id: upload-name-without-attempt
+  file: claude-review.yml
+  old: "name: oc-pass-review-a${{ github.run_attempt }}"
+  new: "name: oc-pass-review"
+  expect: upload
+- id: upload-missing-files-warn
+  file: claude-review.yml
+  old: "if-no-files-found: error"
+  new: "if-no-files-found: warn"
+  expect: upload
+- id: bundle-id-not-from-upload
+  file: claude-review.yml
+  old: "bundle-artifact-id: ${{ steps.upload.outputs.artifact-id }}"
+  new: "bundle-artifact-id: ${{ steps.collect.outputs.bundle-digest }}"
+  expect: job-outputs
+- id: digest-not-from-analyze
+  file: claude-review.yml
+  old: "review-digest: ${{ steps.analyze.outputs.review-digest }}"
+  new: "review-digest: ${{ steps.upload-review.outputs.artifact-digest }}"
+  expect: job-outputs
+
+# --- central workflow: dependency review ---
+- id: dependency-review-output-renamed
+  file: claude-review.yml
+  old: "      outcome: ${{ steps.dr.outcome }}"
+  new: "      result: ${{ steps.dr.outcome }}"
+  expect: dependency-review
+- id: dependency-review-conclusion
+  file: claude-review.yml
+  old: "${{ steps.dr.outcome }}"
+  new: "${{ steps.dr.conclusion }}"
+  expect: dependency-review
+- id: dependency-review-severity
+  file: claude-review.yml
+  old: "fail-on-severity: high"
+  new: "fail-on-severity: critical"
+  expect: dependency-review
+- id: dependency-review-warn-only
+  file: claude-review.yml
+  old: "warn-only: false"
+  new: "warn-only: true"
+  expect: dependency-review
+- id: dependency-review-head-ref
+  file: claude-review.yml
+  old: "head-ref: ${{ needs.collect.outputs.head-sha }}"
+  new: "head-ref: main"
+  expect: dependency-review
+
+# --- central workflow: analyze and publish steps ---
+- id: analyze-without-job-workflow-sha
+  file: claude-review.yml
+  old: "          JOB_WORKFLOW_SHA: ${{ job.workflow_sha }}\n"
+  new: ""
+  expect: analyze-env
+- id: publish-outcome-literal
+  file: claude-review.yml
+  old: "DEPENDENCY_REVIEW_OUTCOME: ${{ needs.dependency-review.outputs.outcome }}"
+  new: "DEPENDENCY_REVIEW_OUTCOME: success"
+  expect: publish-env
+- id: publish-not-last
+  file: claude-review.yml
+  old: "--needs-json \"$RUNNER_TEMP/needs.json\"\n"
+  new: "--needs-json \"$RUNNER_TEMP/needs.json\"\n      - name: After\n        run: echo done\n"
+  expect: publish-env
+- id: publish-step-env-extra
+  file: claude-review.yml
+  old: "          PYTHONPATH: ${{ github.workspace }}/central/review/src\n        run: |\n"
+  new: "          PYTHONPATH: ${{ github.workspace }}/central/review/src\n          BASH_ENV: /tmp/exit-zero.sh\n        run: |\n"
+  expect: publish-env
+
+# --- central workflow: the publish exit code is the gate ---
+- id: publish-true-or
+  file: claude-review.yml
+  old: "          uv run --no-sync --project central/review python -m oc_review.publish"
+  new: "          true || uv run --no-sync --project central/review python -m oc_review.publish"
+  expect: publish-run
+- id: publish-or-true
+  file: claude-review.yml
+  old: "--needs-json \"$RUNNER_TEMP/needs.json\"\n"
+  new: "--needs-json \"$RUNNER_TEMP/needs.json\" || true\n"
+  expect: publish-run
+- id: publish-exit-trap
+  file: claude-review.yml
+  old: "          printf '%s' \"$NEEDS_JSON\""
+  new: "          trap 'exit 0' EXIT\n          printf '%s' \"$NEEDS_JSON\""
+  expect: publish-run
+- id: publish-shell
+  file: claude-review.yml
+  old: "      - name: Compute the gate and write the PR comments\n"
+  new: "      - name: Compute the gate and write the PR comments\n        shell: bash -c 'bash {0}; exit 0'\n"
+  expect: publish-run
+- id: publish-job-defaults
+  file: claude-review.yml
+  old: "    if: always()\n"
+  new: "    if: always()\n    defaults:\n      run:\n        shell: bash -c 'bash {0}; exit 0'\n"
+  expect: publish-run
+- id: publish-workflow-defaults
+  file: claude-review.yml
+  old: "permissions: {}\n\njobs:"
+  new: "permissions: {}\n\ndefaults:\n  run:\n    shell: bash -c 'bash {0}; exit 0'\n\njobs:"
+  expect: publish-run
+- id: publish-workflow-env
+  file: claude-review.yml
+  old: "permissions: {}\n\njobs:"
+  new: "permissions: {}\n\nenv:\n  BASH_ENV: /tmp/exit-zero.sh\n\njobs:"
+  expect: publish-run
+- id: publish-gate-job-env
+  file: claude-review.yml
+  old: "      actions: read\n    env:\n"
+  new: "      actions: read\n    env:\n      BASH_ENV: /tmp/exit-zero.sh\n"
+  expect: publish-run
+
+# --- test.yml (decision O11) ---
+- id: test-pull-request-target
+  file: test.yml
+  old: "  pull_request:\n"
+  new: "  pull_request_target:\n"
+  expect: test-workflow
+- id: test-pr-paths
+  file: test.yml
+  old: "  pull_request:\n"
+  new: "  pull_request:\n    paths: [\"review/**\"]\n"
+  expect: test-workflow
+- id: test-pr-branches
+  file: test.yml
+  old: "  pull_request:\n"
+  new: "  pull_request:\n    branches: [main]\n"
+  expect: test-workflow
+- id: test-pr-types
+  file: test.yml
+  old: "  pull_request:\n"
+  new: "  pull_request:\n    types: [opened]\n"
+  expect: test-workflow
+- id: test-push-missing
+  file: test.yml
+  old: "  push:\n    branches: [main]\n"
+  new: ""
+  expect: test-workflow
+- id: test-push-wrong-branch
+  file: test.yml
+  old: "branches: [main]"
+  new: "branches: [develop]"
+  expect: test-workflow
+- id: test-push-extra-branch
+  file: test.yml
+  old: "branches: [main]"
+  new: "branches: [main, develop]"
+  expect: test-workflow
+- id: test-push-unfiltered
+  file: test.yml
+  old: "  push:\n    branches: [main]\n"
+  new: "  push:\n"
+  expect: test-workflow
+- id: test-push-paths
+  file: test.yml
+  old: "    branches: [main]\n"
+  new: "    branches: [main]\n    paths: [\"review/**\"]\n"
+  expect: test-workflow
+- id: test-extra-event
+  file: test.yml
+  old: "  push:\n"
+  new: "  workflow_dispatch:\n  push:\n"
+  expect: test-workflow
+- id: test-id-token
+  file: test.yml
+  old: "    permissions:\n      contents: read\n"
+  new: "    permissions:\n      contents: read\n      id-token: write\n"
+  expect: test-workflow
+- id: test-write-token
+  file: test.yml
+  old: "      contents: read\n"
+  new: "      contents: write\n"
+  expect: test-workflow
+- id: test-secrets
+  file: test.yml
+  old: "        working-directory: review\n        run: uv run --locked pytest tests/unit\n"
+  new: "        working-directory: review\n        env:\n          TOKEN: ${{ secrets.TOKEN }}\n        run: uv run --locked pytest tests/unit\n"
+  expect: secrets
+- id: test-environment
+  file: test.yml
+  old: "    timeout-minutes: 10\n"
+  new: "    timeout-minutes: 10\n    environment: ci\n"
+  expect: test-workflow
+
+# --- eval.yml (spec "Fixture eval credential") ---
+- id: eval-workflow-call
+  file: eval.yml
+  old: "on: workflow_dispatch\n"
+  new: "on: [workflow_dispatch, workflow_call]\n"
+  expect: eval-trigger
+- id: eval-pull-requests-write
+  file: eval.yml
+  old: "      id-token: write\n"
+  new: "      id-token: write\n      pull-requests: write\n"
+  expect: [eval-permissions, credential-separation]
+- id: eval-id-token-missing
+  file: eval.yml
+  old: "      id-token: write\n"
+  new: ""
+  expect: eval-permissions
+- id: eval-job-permissions-removed
+  file: eval.yml
+  old: "    permissions:\n      contents: read\n      id-token: write\n"
+  new: ""
+  expect: eval-permissions
+- id: eval-duplicate-key
+  file: eval.yml
+  old: "    environment: eval\n"
+  new: "    environment: eval\n    environment: other\n"
+  expect: parse

@@ -1,0 +1,10 @@
+# Bad: read-all on the eval job (it must state contents: read and id-token: write itself).
+on: workflow_dispatch
+permissions: {}
+jobs:
+  evals:
+    runs-on: ubuntu-24.04
+    environment: eval
+    permissions: read-all
+    steps:
+      - run: echo evals

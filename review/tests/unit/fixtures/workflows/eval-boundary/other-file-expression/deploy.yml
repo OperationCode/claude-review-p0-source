@@ -1,0 +1,15 @@
+# Bad: an environment name that is not a literal can be eval at run time.
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        type: string
+permissions: {}
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.target }}
+    permissions:
+      contents: read
+    steps:
+      - run: echo deploy

@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling>=1.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "demo"
+version = "0.1.0"
+dependencies = [
+    "requests>=2.31",
+    "Flask[async]==3.0.0 ; python_version >= '3.9'",
+    "private-lib @ git+https://github.com/o/private-lib.git@v1",
+    "internal-pkg",
+    "tarpkg @ https://example.com/tarpkg-1.0.tar.gz",
+]
+
+[project.optional-dependencies]
+extra = ["rich"]
+
+[dependency-groups]
+dev = ["pytest>=8", {include-group = "lint"}]
+lint = ["ruff"]
+
+[tool.uv.sources]
+internal-pkg = { index = "corp" }
+rich = { path = "../rich" }
+
+[[tool.uv.index]]
+name = "corp"
+url = "https://pypi.corp.example/simple"

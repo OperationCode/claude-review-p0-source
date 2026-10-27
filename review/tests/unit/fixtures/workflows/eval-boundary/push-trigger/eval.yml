@@ -1,0 +1,12 @@
+# Bad: eval.yml runs on workflow_dispatch only.
+on: push
+permissions: {}
+jobs:
+  evals:
+    runs-on: ubuntu-24.04
+    environment: eval
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - run: echo evals

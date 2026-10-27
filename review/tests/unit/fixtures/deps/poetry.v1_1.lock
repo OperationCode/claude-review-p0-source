@@ -1,0 +1,12 @@
+[[package]]
+name = "requests"
+version = "2.31.0"
+description = ""
+category = "main"
+optional = false
+python-versions = "*"
+
+[metadata]
+lock-version = "1.1"
+python-versions = "^3.8"
+content-hash = "abc"

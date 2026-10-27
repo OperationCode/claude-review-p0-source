@@ -1,0 +1,12 @@
+# Good: eval.yml uses eval, and its job states exactly contents: read and id-token: write.
+on: workflow_dispatch
+permissions: {}
+jobs:
+  evals:
+    runs-on: ubuntu-24.04
+    environment: eval
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - run: echo evals

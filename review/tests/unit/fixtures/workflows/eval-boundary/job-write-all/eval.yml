@@ -1,0 +1,10 @@
+# Bad: write-all on the eval job.
+on: workflow_dispatch
+permissions: {}
+jobs:
+  evals:
+    runs-on: ubuntu-24.04
+    environment: eval
+    permissions: write-all
+    steps:
+      - run: echo evals

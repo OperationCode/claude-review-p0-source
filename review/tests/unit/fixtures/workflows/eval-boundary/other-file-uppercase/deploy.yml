@@ -1,0 +1,12 @@
+# Bad: environment names are not case sensitive, so EVAL is the eval environment.
+on: workflow_dispatch
+permissions: {}
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: EVAL
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - run: echo deploy
